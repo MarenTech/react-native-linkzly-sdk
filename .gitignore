@@ -6,7 +6,6 @@ example/package-lock.json
 .pnp.js
 
 # Build outputs
-lib/
 android/build/
 ios/build/
 
