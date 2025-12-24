@@ -67,11 +67,14 @@ dependencies {
   // ============================================================
   // LinkzlySDK Dependency Configuration
   // ============================================================
-  // ACTIVE: Using JitPack from GitHub (com.github.MarenTech:linkzly-android:1.0.1)
-  // The SDK is automatically fetched from GitHub via JitPack.
+  // ACTIVE: Using JitPack from GitHub (main branch for latest features including debug methods)
+  // The SDK is automatically fetched from https://github.com/MarenTech/linkzly-android-sdk
   // JitPack repository is configured in the repositories block above.
   // Using 'api' instead of 'implementation' to expose LinkzlySDK classes to consuming apps
-  api 'com.github.MarenTech:linkzly-android:1.0.1'
+  api 'com.github.MarenTech:linkzly-android-sdk:0.0.1'
+
+  // Tagged release (commented out - using main branch for latest features)
+  // api 'com.github.MarenTech:linkzly-android-sdk:1.0.0'
 
   // Local development: (commented out for production)
   // api project(':linkzly-android-sdk')
