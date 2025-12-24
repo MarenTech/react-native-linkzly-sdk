@@ -342,12 +342,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.setBatchingStrategy(strategy)
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugSetBatchSizeWithSize:resolver:rejecter:)
@@ -356,12 +352,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.setBatchSize(size)
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugSetFlushIntervalWithInterval:resolver:rejecter:)
@@ -370,12 +362,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.setFlushInterval(interval)
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugSimulateServerConfigWithBatchSize:flushInterval:ttl:strategy:resolver:rejecter:)
@@ -387,17 +375,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.simulateServerConfig(
-            batchSize: batchSize,
-            flushInterval: flushInterval,
-            ttl: ttl,
-            strategy: strategy
-        )
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugResetConfigWithResolver:rejecter:)
@@ -405,12 +384,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.resetDebugConfig()
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugPrintConfigWithResolver:rejecter:)
@@ -418,12 +393,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        LinkzlySDKDebug.printDebugConfig()
-        resolver(["success": true])
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     @objc(debugGetConfigWithResolver:rejecter:)
@@ -431,30 +402,8 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver: @escaping RCTPromiseResolveBlock,
         rejecter: @escaping RCTPromiseRejectBlock
     ) {
-        #if DEBUG
-        let strategy = UserDefaults.standard.string(forKey: "linkzly_debug_batching_strategy")
-        let batchSize = UserDefaults.standard.object(forKey: "linkzly_debug_batch_size") as? Int
-        let flushInterval = UserDefaults.standard.object(forKey: "linkzly_debug_flush_interval") as? Double
-
-        var config: [String: Any] = [:]
-        if let strategy = strategy {
-            config["strategy"] = strategy
-        }
-        if let batchSize = batchSize {
-            config["batchSize"] = batchSize
-        }
-        if let flushInterval = flushInterval {
-            config["flushInterval"] = flushInterval
-        }
-
-        if config.isEmpty {
-            resolver(NSNull())
-        } else {
-            resolver(config)
-        }
-        #else
-        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds", nil)
-        #endif
+        // Debug methods not available when using Release XCFramework
+        rejecter("DEBUG_ONLY", "Debug methods are only available in DEBUG builds of LinkzlySDK", nil)
     }
 
     deinit {
