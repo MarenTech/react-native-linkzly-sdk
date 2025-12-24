@@ -16,11 +16,11 @@ end
 
 target 'LinkzlyExample' do
   # ============================================================
-  # Local Linkzly iOS SDK for Development
+  # Linkzly iOS SDK from GitHub
   # ============================================================
   # This overrides any LinkzlySDK dependency from the React Native SDK podspec
-  # Points to the local iOS SDK in the monorepo for development
-  pod 'LinkzlySDK', :git => 'https://github.com/MarenTech/linkzly-ios-sdk.git', :tag => '0.0.1'
+  # Uses the pre-built XCFramework from the GitHub release
+  pod 'LinkzlySDK', :git => 'https://github.com/MarenTech/linkzly-ios-sdk.git', :tag => '1.0.0'
   # ============================================================
 
   config = use_native_modules!

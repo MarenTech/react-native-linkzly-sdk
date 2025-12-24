@@ -1,5 +1,5 @@
 import Foundation
-import LinkzlySDK
+import Linkzly
 
 @objc(LinkzlyReactNativeSwift)
 public class LinkzlyReactNativeSwift: NSObject {

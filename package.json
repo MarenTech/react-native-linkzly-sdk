@@ -1,6 +1,6 @@
 {
   "name": "@linkzly/react-native-sdk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Linkzly React Native SDK for deep linking and attribution tracking",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",

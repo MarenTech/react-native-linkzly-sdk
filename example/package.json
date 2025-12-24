@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@linkzly/react-native-sdk": "github:MarenTech/linkzly-react-native-sdk#main",
+    "@linkzly/react-native-sdk": "github:MarenTech/react-native-linkzly-sdk",
     "@react-native/new-app-screen": "0.82.1",
     "@react-navigation/bottom-tabs": "^7.9.0",
     "@react-navigation/native": "^7.1.26",
