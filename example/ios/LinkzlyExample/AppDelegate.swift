@@ -2,7 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
-import LinkzlySDK
+import Linkzly
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
