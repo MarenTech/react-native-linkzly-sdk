@@ -1,0 +1,9 @@
+example/
+.vscode/
+.idea/
+android/build/
+ios/build/
+*.log
+.DS_Store
+*.tsbuildinfo
+.history/

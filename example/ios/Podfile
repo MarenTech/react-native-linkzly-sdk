@@ -1,0 +1,61 @@
+# Resolve react_native_pods.rb with node to allow for hoisting
+require Pod::Executable.execute_command('node', ['-p',
+  'require.resolve(
+    "react-native/scripts/react_native_pods.rb",
+    {paths: [process.argv[1]]},
+  )', __dir__]).strip
+
+platform :ios, min_ios_version_supported
+prepare_react_native_project!
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
+target 'LinkzlyExample' do
+  # ============================================================
+  # Local Linkzly iOS SDK for Development
+  # ============================================================
+  # This overrides any LinkzlySDK dependency from the React Native SDK podspec
+  # Points to the local iOS SDK in the monorepo for development
+  pod 'LinkzlySDK', :git => 'https://github.com/MarenTech/linkzly-ios-sdk.git', :tag => '0.0.1'
+  # ============================================================
+
+  config = use_native_modules!
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+      # :ccache_enabled => true
+    )
+
+    # Fix for duplicate PrivacyInfo.xcprivacy file error
+    # React Native aggregates privacy manifests, so we need to exclude the LinkzlySDK privacy file
+    # from being copied to avoid the duplicate command error
+
+    installer.pods_project.targets.each do |target|
+      # Only remove PrivacyInfo.xcprivacy from LinkzlySDK target
+      if target.name == 'LinkzlySDK'
+        target.build_phases.each do |phase|
+          if phase.is_a?(Xcodeproj::Project::Object::PBXResourcesBuildPhase)
+            phase.files.delete_if do |file|
+              file.file_ref&.path&.include?('PrivacyInfo.xcprivacy')
+            end
+          end
+        end
+      end
+    end
+
+    installer.pods_project.save
+  end
+end

@@ -1,0 +1,110 @@
+buildscript {
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  def kotlinVersion = rootProject.hasProperty('ext') && rootProject.ext.has('kotlinVersion') ? rootProject.ext.kotlinVersion : '1.9.24'
+
+  dependencies {
+    classpath 'com.android.tools.build:gradle:7.4.2'
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+// NOTE: React Native CLI autolinking - package name is com.linkzly.reactnative.LinkzlyReactNativePackage
+android {
+  compileSdkVersion safeExtGet('compileSdkVersion', 33)
+
+  namespace "com.linkzly.reactnative"
+
+  defaultConfig {
+    minSdkVersion safeExtGet('minSdkVersion', 21)
+    targetSdkVersion safeExtGet('targetSdkVersion', 33)
+    versionCode 1
+    versionName "1.0"
+  }
+
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+
+  lintOptions {
+    disable 'GradleCompatible'
+  }
+
+  compileOptions {
+    sourceCompatibility safeExtGet('javaVersion', JavaVersion.VERSION_17)
+    targetCompatibility safeExtGet('javaVersion', JavaVersion.VERSION_17)
+  }
+
+  kotlinOptions {
+    jvmTarget = safeExtGet('javaVersion', '17').toString().replace('VERSION_', '')
+  }
+}
+
+repositories {
+  mavenCentral()
+  google()
+  // JitPack repository required for Linkzly Android SDK from GitHub
+  maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+  implementation "com.facebook.react:react-native:+"
+
+  // ============================================================
+  // LinkzlySDK Dependency Configuration
+  // ============================================================
+  // ACTIVE: Using JitPack from GitHub (com.github.MarenTech:linkzly-android:1.0.1)
+  // The SDK is automatically fetched from GitHub via JitPack.
+  // JitPack repository is configured in the repositories block above.
+  // Using 'api' instead of 'implementation' to expose LinkzlySDK classes to consuming apps
+  api 'com.github.MarenTech:linkzly-android:1.0.1'
+
+  // Local development: (commented out for production)
+  // api project(':linkzly-android-sdk')
+
+  // ============================================================
+  // REQUIRED: Transitive Dependencies from linkzly-android SDK
+  // These MUST be exposed as 'api' to prevent ClassNotFoundException
+  // at runtime in consuming apps
+  // ============================================================
+
+  // Network & HTTP - used by LinkzlySDK for API requests
+  api 'com.squareup.okhttp3:okhttp:4.12.0'
+  api 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+
+  // Kotlin runtime & utilities - required by LinkzlySDK
+  api "org.jetbrains.kotlin:kotlin-stdlib:${safeExtGet('kotlinVersion', '1.9.24')}"
+  api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+  api 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2'
+
+  // AndroidX libraries - required for lifecycle monitoring and utilities
+  api 'androidx.core:core-ktx:1.12.0'
+  api 'androidx.lifecycle:lifecycle-process:2.6.2'
+  api 'androidx.lifecycle:lifecycle-common:2.6.2'
+
+  // Google Play Services - required for install referrer tracking
+  api 'com.android.installreferrer:installreferrer:2.2'
+
+  // JSON parsing - required for network response parsing
+  api 'com.google.code.gson:gson:2.10.1'
+
+  // ============================================================
+  // Note: This configuration is for monorepo development.
+  // Client apps using this SDK from npm/GitHub will use the JitPack dependency
+  // automatically - they don't need to include the local project reference.
+  // ============================================================
+}

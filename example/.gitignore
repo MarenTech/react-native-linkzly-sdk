@@ -1,0 +1,158 @@
+# OSX
+#
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Xcode
+#
+build/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.xcuserstate
+*.xcworkspace
+!default.xcworkspace
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+ios/*.xcodeproj/project.xcworkspace/xcuserdata/
+**/.xcode.env.local
+
+# Android/IntelliJ
+#
+build/
+app/build/
+android/build/
+android/app/build/
+android/.gradle/
+android/.idea/
+android/.cxx/
+.idea/
+.gradle/
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+.kotlin/
+.gradletasknamecache
+
+# Built application files
+*.apk
+*.ap_
+*.aab
+*.aar
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# node.js
+#
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock
+package-lock.json
+.pnpm-debug.log*
+.npm
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifact
+*.jsbundle
+
+# Ruby / CocoaPods
+**/Pods/
+/vendor/bundle/
+Podfile.lock
+*.xcworkspace/xcuserdata/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+.metro/
+.metro-cache/
+
+# React Native
+# React Native packager
+.react-native/
+.expo/
+.expo-shared/
+
+# TypeScript
+*.tsbuildinfo
+lib/
+dist/
+
+# testing
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.history/
+*.sublime-project
+*.sublime-workspace
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+.temp/
+
+# Log files
+*.log
+*.log.*

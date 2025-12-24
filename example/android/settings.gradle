@@ -1,0 +1,19 @@
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+rootProject.name = 'LinkzlyExample'
+include ':app'
+includeBuild('../node_modules/@react-native/gradle-plugin')
+
+// ============================================================
+// Linkzly Android SDK Configuration
+// ============================================================
+// ACTIVE: Using JitPack from GitHub (com.github.MarenTech:linkzly-android:1.0.1)
+// No local project includes needed - the SDK is fetched from GitHub via JitPack.
+// JitPack repository is configured in build.gradle repositories block.
+//
+// Alternative: Local development (commented out)
+// If you need to use a local clone for development:
+// 1. Include local project in settings.gradle (see switch-dependency.js)
+// 2. Update React Native SDK's android/build.gradle to use local project
+// ============================================================

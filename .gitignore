@@ -1,0 +1,81 @@
+# Dependencies
+node_modules/
+package-lock.json
+example/package-lock.json
+.pnp/
+.pnp.js
+
+# Build outputs
+lib/
+android/build/
+ios/build/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.code-workspace
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+local.properties
+
+# Testing
+coverage/
+.jest/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+Thumbs.db
+*.orig
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# CocoaPods (for example app only)
+example/ios/Pods/
+example/ios/Podfile.lock
+
+# Gradle (for example app only)
+example/android/.gradle/
+example/android/build/
+example/android/app/build/
+example/android/local.properties
+
+# Example app specifics
+example/node_modules/
+example/ios/build/
+example/.bundle/
+example/ios/LinkzlyExample.xcworkspace/xcuserdata/
+example/ios/LinkzlyExample.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Workspace files
+*.code-workspace
+
+# React Native
+*.jsbundle
+
+# Buck
+.buckd/
+buck-out/
+.buckconfig.local
+
+# Watchman
+.watchmanconfig
+
+# Metro
+.metro-health-check*
+
+# TypeScript
+*.tsbuildinfo
