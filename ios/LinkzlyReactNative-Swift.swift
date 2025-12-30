@@ -4,12 +4,59 @@ import Linkzly
 @objc(LinkzlyReactNativeSwift)
 public class LinkzlyReactNativeSwift: NSObject {
 
-    private var eventEmitter: LinkzlyReactNative?
+    private weak var eventEmitter: LinkzlyReactNative?
+    private var hasListeners: Bool = false
+    private var pendingEvents: [[String: Any]] = []
 
     override init() {
         super.init()
         setupNotifications()
     }
+
+    // MARK: - Public Methods for Event Emitter Connection
+
+    /// Called by Obj-C bridge to connect the event emitter
+    @objc public func setEventEmitter(_ emitter: LinkzlyReactNative) {
+        self.eventEmitter = emitter
+    }
+
+    /// Called by Obj-C bridge when JS starts/stops listening
+    @objc public func setHasListeners(_ value: Bool) {
+        hasListeners = value
+        if hasListeners {
+            flushPendingEvents()
+        }
+    }
+
+    // MARK: - Event Queue Management
+
+    /// Queue an event if no listeners, or emit immediately if listeners exist
+    private func emitOrQueueEvent(name: String, body: [String: Any]) {
+        if hasListeners, let emitter = eventEmitter {
+            emitter.sendEvent(withName: name, body: body)
+        } else {
+            // Queue the event to be sent when listeners register
+            pendingEvents.append([
+                "name": name,
+                "body": body
+            ])
+        }
+    }
+
+    /// Flush all pending events to the emitter
+    private func flushPendingEvents() {
+        guard let emitter = eventEmitter else { return }
+
+        for event in pendingEvents {
+            if let name = event["name"] as? String,
+               let body = event["body"] as? [String: Any] {
+                emitter.sendEvent(withName: name, body: body)
+            }
+        }
+        pendingEvents.removeAll()
+    }
+
+    // MARK: - Notification Setup
 
     private func setupNotifications() {
         NotificationCenter.default.addObserver(
@@ -26,6 +73,8 @@ public class LinkzlyReactNativeSwift: NSObject {
             object: nil
         )
     }
+
+    // MARK: - Notification Handlers
 
     @objc func handleDeepLinkDataReceived(_ notification: Notification) {
         guard let deepLinkData = notification.userInfo?["deepLinkData"] as? DeepLinkData else {
@@ -44,7 +93,7 @@ public class LinkzlyReactNativeSwift: NSObject {
             eventData["url"] = url
         }
 
-        eventEmitter?.sendEvent(withName: "LinkzlyDeepLinkReceived", body: eventData)
+        emitOrQueueEvent(name: "LinkzlyDeepLinkReceived", body: eventData)
     }
 
     @objc func handleUniversalLinkReceived(_ notification: Notification) {
@@ -58,7 +107,7 @@ public class LinkzlyReactNativeSwift: NSObject {
             "attributionData": attributionData
         ]
 
-        eventEmitter?.sendEvent(withName: "LinkzlyUniversalLinkReceived", body: eventData)
+        emitOrQueueEvent(name: "LinkzlyUniversalLinkReceived", body: eventData)
     }
 
     @objc(configureWithSdkKey:environment:resolver:rejecter:)

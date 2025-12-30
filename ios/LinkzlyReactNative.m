@@ -1,7 +1,9 @@
 #import "LinkzlyReactNative.h"
 #import "LinkzlyReactNative-Swift.h"
 
-@implementation LinkzlyReactNative
+@implementation LinkzlyReactNative {
+    LinkzlyReactNativeSwift *_swiftHandler;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -9,8 +11,27 @@ RCT_EXPORT_MODULE()
     return YES;
 }
 
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _swiftHandler = [[LinkzlyReactNativeSwift alloc] init];
+        [_swiftHandler setEventEmitter:self];
+    }
+    return self;
+}
+
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"LinkzlyDeepLinkReceived", @"LinkzlyUniversalLinkReceived"];
+}
+
+// Called when JavaScript starts listening to events
+- (void)startObserving {
+    [_swiftHandler setHasListeners:YES];
+}
+
+// Called when JavaScript stops listening to events
+- (void)stopObserving {
+    [_swiftHandler setHasListeners:NO];
 }
 
 RCT_EXPORT_METHOD(configure:(NSString *)sdkKey
