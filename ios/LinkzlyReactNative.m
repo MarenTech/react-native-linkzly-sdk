@@ -1,23 +1,12 @@
 #import "LinkzlyReactNative.h"
 #import "LinkzlyReactNative-Swift.h"
 
-@implementation LinkzlyReactNative {
-    LinkzlyReactNativeSwift *_swiftHandler;
-}
+@implementation LinkzlyReactNative
 
 RCT_EXPORT_MODULE()
 
 + (BOOL)requiresMainQueueSetup {
     return YES;
-}
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _swiftHandler = [[LinkzlyReactNativeSwift alloc] init];
-        [_swiftHandler setEventEmitter:self];
-    }
-    return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
@@ -26,12 +15,13 @@ RCT_EXPORT_MODULE()
 
 // Called when JavaScript starts listening to events
 - (void)startObserving {
-    [_swiftHandler setHasListeners:YES];
+    [[LinkzlyReactNativeSwift shared] setEventEmitter:self];
+    [[LinkzlyReactNativeSwift shared] setHasListeners:YES];
 }
 
 // Called when JavaScript stops listening to events
 - (void)stopObserving {
-    [_swiftHandler setHasListeners:NO];
+    [[LinkzlyReactNativeSwift shared] setHasListeners:NO];
 }
 
 RCT_EXPORT_METHOD(configure:(NSString *)sdkKey

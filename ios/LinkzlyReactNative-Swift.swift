@@ -4,11 +4,14 @@ import Linkzly
 @objc(LinkzlyReactNativeSwift)
 public class LinkzlyReactNativeSwift: NSObject {
 
+    // Singleton instance
+    @objc public static let shared = LinkzlyReactNativeSwift()
+
     private weak var eventEmitter: LinkzlyReactNative?
     private var hasListeners: Bool = false
     private var pendingEvents: [[String: Any]] = []
 
-    override init() {
+    private override init() {
         super.init()
         setupNotifications()
     }
