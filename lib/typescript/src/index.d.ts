@@ -12,7 +12,9 @@ export interface DeepLinkData {
 }
 export interface UniversalLinkEvent {
     url: string;
-    attributionData: Record<string, any>;
+    path?: string;
+    parameters: Record<string, any>;
+    attributionData?: Record<string, any>;
 }
 export interface EventParameters {
     [key: string]: string | number | boolean | any;
@@ -85,6 +87,11 @@ declare class LinkzlySDK {
      * @param parameters Optional event parameters
      */
     trackEvent(eventName: string, parameters?: EventParameters): Promise<void>;
+    /**
+     * Track a purchase event
+     * @param parameters Purchase event parameters (e.g., amount, currency, items)
+     */
+    trackPurchase(parameters?: EventParameters): Promise<void>;
     /**
      * Track multiple events in a batch
      * @param events Array of events to track
@@ -159,6 +166,16 @@ declare class LinkzlySDK {
      * @returns Whether advertising tracking is enabled
      */
     isAdvertisingTrackingEnabled(): Promise<boolean>;
+    /**
+     * Manually start a new session
+     * Useful for manual session management or non-standard app lifecycles
+     */
+    startSession(): Promise<void>;
+    /**
+     * Manually end the current session
+     * Useful for manual session management or non-standard app lifecycles
+     */
+    endSession(): Promise<void>;
     /**
      * Get the current IDFA value (iOS only)
      * Returns null if ATT not authorized, advertising tracking disabled, or on Android
@@ -304,6 +321,18 @@ declare class LinkzlySDKDebugClass {
      * @returns Current debug config or null if not available
      */
     getDebugConfig(): Promise<DebugBatchConfig | null>;
+    /**
+     * Get the number of pending events in the queue
+     *
+     * @returns Number of pending events
+     */
+    getPendingEventCount(): Promise<number>;
+    /**
+     * Flush all pending events immediately
+     *
+     * @returns Promise resolving to true if successful
+     */
+    flushEvents(): Promise<boolean>;
 }
 declare const linkzlySDK: LinkzlySDK;
 /**
