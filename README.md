@@ -145,21 +145,77 @@ await LinkzlySDK.handleUniversalLink(url);
 
 ## Event Tracking
 
+The React Native SDK bridges to the native iOS/Android implementations to automatically track lifecycle events and provides methods for manual event tracking.
+
+### 1. Lifecycle Events (Automatic)
+
+The SDK automatically tracks application lifecycle events:
+*   **Install**: Tracked on the first launch.
+*   **Open**: Tracked on every app launch.
+
 ```typescript
-// Track custom events
+import LinkzlySDK from '@linkzly/react-native-sdk';
+
+// These are called automatically, but can be manually triggered if needed
+await LinkzlySDK.trackInstall(); // First launch only
+await LinkzlySDK.trackOpen();    // Every app launch
+```
+
+### 2. Session Management (Manual)
+
+Use these methods to manually control session boundaries.
+
+```typescript
+import LinkzlySDK from '@linkzly/react-native-sdk';
+
+// Start a session
+await LinkzlySDK.startSession();
+
+// End a session
+await LinkzlySDK.endSession();
+```
+
+### 3. Commerce Events
+
+Track revenue and in-app purchases.
+
+```typescript
+import LinkzlySDK from '@linkzly/react-native-sdk';
+
+// Track a purchase
+await LinkzlySDK.trackPurchase({
+  amount: 9.99,
+  currency: 'USD',
+  sku: 'premium_monthly'
+});
+```
+
+### 4. Custom Events
+
+Track any user interaction.
+
+```typescript
+import LinkzlySDK from '@linkzly/react-native-sdk';
+
+// Track a custom event
+await LinkzlySDK.trackEvent('tutorial_completed', { step: 5 });
+
+// Example with more parameters
 await LinkzlySDK.trackEvent('purchase_completed', {
   product_id: '12345',
   amount: 29.99,
   currency: 'USD'
 });
+```
 
-// Track install (automatically called on first launch)
-await LinkzlySDK.trackInstall();
+### 5. Batch Tracking
 
-// Track app open
-await LinkzlySDK.trackOpen();
+Track multiple events efficiently in a single call.
 
-// Batch events
+```typescript
+import LinkzlySDK from '@linkzly/react-native-sdk';
+
+// Track multiple events
 await LinkzlySDK.trackEventBatch([
   { eventName: 'screen_view', parameters: { screen: 'home' } },
   { eventName: 'button_click', parameters: { button: 'signup' } }
