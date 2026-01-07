@@ -185,6 +185,28 @@ class LinkzlyReactNativeModule(reactContext: ReactApplicationContext) :
     }
 
     @ReactMethod
+    fun trackPurchase(parameters: ReadableMap?, promise: Promise) {
+        try {
+            val params = parameters?.toHashMap()?.mapValues { it.value ?: "" }?.map { it.key to it.value }?.toMap() ?: emptyMap<String, Any>()
+
+            LinkzlySDK.trackPurchase(params) { result ->
+                result.fold(
+                    onSuccess = { success ->
+                        val response = Arguments.createMap()
+                        response.putBoolean("success", success)
+                        promise.resolve(response)
+                    },
+                    onFailure = { error ->
+                        promise.reject("TRACK_PURCHASE_ERROR", error.message, error)
+                    }
+                )
+            }
+        } catch (e: Exception) {
+            promise.reject("TRACK_PURCHASE_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
     fun trackEventBatch(events: ReadableArray, promise: Promise) {
         try {
             val eventList = mutableListOf<Map<String, Any>>()
@@ -308,6 +330,30 @@ class LinkzlyReactNativeModule(reactContext: ReactApplicationContext) :
             promise.resolve(enabled)
         } catch (e: Exception) {
             promise.reject("GET_ADVERTISING_TRACKING_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    fun startSession(promise: Promise) {
+        try {
+            LinkzlySDK.startSession()
+            val result = Arguments.createMap()
+            result.putBoolean("success", true)
+            promise.resolve(result)
+        } catch (e: Exception) {
+            promise.reject("START_SESSION_ERROR", e.message, e)
+        }
+    }
+
+    @ReactMethod
+    fun endSession(promise: Promise) {
+        try {
+            LinkzlySDK.endSession()
+            val result = Arguments.createMap()
+            result.putBoolean("success", true)
+            promise.resolve(result)
+        } catch (e: Exception) {
+            promise.reject("END_SESSION_ERROR", e.message, e)
         }
     }
 

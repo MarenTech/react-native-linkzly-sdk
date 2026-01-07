@@ -90,7 +90,7 @@ const ProductDetailScreen = () => {
     LinkzlySDK.trackEvent('add_to_cart', params);
   };
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
     if (!product) return;
 
     const price = ProductHelper.getPrice(product);
@@ -108,14 +108,26 @@ const ProductDetailScreen = () => {
     const attributionParams = DeepLinkRouter.getAttributionParameters();
     Object.assign(params, attributionParams);
 
-    LinkzlySDK.trackEvent('purchase_completed', params);
+    // Track purchase using the new trackPurchase() method
+    try {
+      await LinkzlySDK.trackPurchase(params);
+      console.log('✅ Purchase tracked successfully');
 
-    Alert.alert(
-      'Purchase Successful!',
-      `Thank you for your purchase of ${ProductHelper.getDisplayTitle(
-        product,
-      )}!`,
-    );
+      Alert.alert(
+        'Purchase Successful!',
+        `Thank you for your purchase of ${ProductHelper.getDisplayTitle(
+          product,
+        )}!\n\nPurchase event has been tracked.`,
+      );
+    } catch (error) {
+      console.error('❌ Purchase tracking failed:', error);
+      Alert.alert(
+        'Purchase Successful!',
+        `Thank you for your purchase of ${ProductHelper.getDisplayTitle(
+          product,
+        )}!\n\n(Purchase tracking failed)`,
+      );
+    }
   };
 
   if (isLoading) {

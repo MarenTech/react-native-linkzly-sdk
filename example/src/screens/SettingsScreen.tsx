@@ -9,7 +9,7 @@ import {
   Platform,
   Linking,
 } from 'react-native';
-import LinkzlySDK from '@linkzly/react-native-sdk';
+import LinkzlySDK, {LinkzlyDebug} from '@linkzly/react-native-sdk';
 
 const SettingsScreen = () => {
   const [isAdvertisingTracking, setIsAdvertisingTracking] = useState(true);
@@ -333,6 +333,79 @@ const SettingsScreen = () => {
         )}
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>SDK Features</Text>
+        <Text style={styles.infoText}>
+          Test session management and event batching
+        </Text>
+
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.button, styles.buttonHalfWidth, styles.buttonSuccess]}
+            onPress={async () => {
+              try {
+                await LinkzlySDK.startSession();
+                console.log('🔄 Manual session start triggered');
+                Alert.alert('Success', 'New session started');
+              } catch (error) {
+                console.error('❌ Start session error:', error);
+                Alert.alert('Error', 'Failed to start session');
+              }
+            }}>
+            <Text style={styles.buttonText}>▶️ Start Session</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.buttonHalfWidth, styles.buttonDanger]}
+            onPress={async () => {
+              try {
+                await LinkzlySDK.endSession();
+                console.log('🔄 Manual session end triggered');
+                Alert.alert('Success', 'Session ended');
+              } catch (error) {
+                console.error('❌ End session error:', error);
+                Alert.alert('Error', 'Failed to end session');
+              }
+            }}>
+            <Text style={styles.buttonText}>⏹ End Session</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, styles.buttonInfo]}
+          onPress={async () => {
+            try {
+              const count = await LinkzlyDebug.getPendingEventCount();
+              console.log('📊 Pending events:', count);
+              Alert.alert('Pending Events', `There are ${count} events in the queue`);
+            } catch (error) {
+              console.error('❌ Get pending events error:', error);
+              Alert.alert('Error', 'Failed to get pending event count');
+            }
+          }}>
+          <Text style={styles.buttonText}>📊 Check Pending Events</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.buttonWarning]}
+          onPress={async () => {
+            try {
+              await LinkzlyDebug.flushEvents();
+              console.log('✅ Events flushed successfully');
+              Alert.alert('Success', 'All pending events have been flushed to the server');
+            } catch (error) {
+              console.error('❌ Flush events error:', error);
+              Alert.alert('Error', 'Failed to flush events');
+            }
+          }}>
+          <Text style={styles.buttonText}>🚀 Flush Events Now</Text>
+        </TouchableOpacity>
+
+        <Text style={[styles.infoText, {marginTop: 10, fontSize: 12}]}>
+          Note: SDK automatically manages sessions based on app lifecycle. These controls are for testing manual session management.
+        </Text>
+      </View>
+
       <View style={styles.infoBox}>
         <Text style={styles.infoBoxTitle}>About Advertising Identifiers</Text>
         {Platform.OS === 'ios' ? (
@@ -418,12 +491,20 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 5,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
   button: {
     backgroundColor: '#2196f3',
     padding: 15,
     borderRadius: 8,
     marginTop: 10,
     alignItems: 'center',
+  },
+  buttonHalfWidth: {
+    flex: 1,
   },
   buttonSuccess: {
     backgroundColor: '#4caf50',

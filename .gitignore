@@ -18,6 +18,10 @@ ios/build/
 *.swp
 *.swo
 .DS_Store
+# .cursorrules
+
+# # Release & Internal Tools
+# release.sh
 
 # Environment
 .env

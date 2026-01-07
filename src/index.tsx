@@ -9,13 +9,13 @@ const LINKING_ERROR =
 const LinkzlyReactNative = NativeModules.LinkzlyReactNative
   ? NativeModules.LinkzlyReactNative
   : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+    {},
+    {
+      get() {
+        throw new Error(LINKING_ERROR);
+      },
+    }
+  );
 
 const eventEmitter = new NativeEventEmitter(LinkzlyReactNative);
 
@@ -36,7 +36,9 @@ export interface DeepLinkData {
 
 export interface UniversalLinkEvent {
   url: string;
-  attributionData: Record<string, any>;
+  path?: string;
+  parameters: Record<string, any>;
+  attributionData?: Record<string, any>;
 }
 
 export interface EventParameters {
@@ -176,6 +178,16 @@ class LinkzlySDK {
   }
 
   /**
+   * Track a purchase event
+   * @param parameters Purchase event parameters (e.g., amount, currency, items)
+   */
+  async trackPurchase(
+    parameters?: EventParameters
+  ): Promise<void> {
+    await LinkzlyReactNative.trackPurchase(parameters || {});
+  }
+
+  /**
    * Track multiple events in a batch
    * @param events Array of events to track
    */
@@ -305,6 +317,22 @@ class LinkzlySDK {
    */
   async isAdvertisingTrackingEnabled(): Promise<boolean> {
     return await LinkzlyReactNative.isAdvertisingTrackingEnabled();
+  }
+
+  /**
+   * Manually start a new session
+   * Useful for manual session management or non-standard app lifecycles
+   */
+  async startSession(): Promise<void> {
+    await LinkzlyReactNative.startSession();
+  }
+
+  /**
+   * Manually end the current session
+   * Useful for manual session management or non-standard app lifecycles
+   */
+  async endSession(): Promise<void> {
+    await LinkzlyReactNative.endSession();
   }
 
   /**
@@ -541,7 +569,7 @@ class LinkzlySDK {
     try {
       // Step 1: Parse URL immediately to extract basic data
       const immediateData = this.parseUrlToDeepLinkData(url);
-      
+
       // Step 2: Pass URL to native SDK (stores for backend attribution)
       // On Android, this may return immediate data; on iOS, it returns null
       const nativeData = await this.handleUniversalLink(url);
@@ -580,7 +608,7 @@ class LinkzlySDK {
 
     try {
       const urlParts = url.split('?');
-      
+
       // Extract path
       if (urlParts.length > 0) {
         const urlWithoutQuery = urlParts[0];
@@ -674,7 +702,7 @@ class LinkzlySDK {
     // On Android, we may get immediate data but backend attribution comes later
     // For now, return the data as-is; backend attribution will come via native events
     // if available (handled by addDeepLinkListener's native event subscription)
-    
+
     return data;
   }
 
@@ -861,6 +889,25 @@ class LinkzlySDKDebugClass {
    */
   async getDebugConfig(): Promise<DebugBatchConfig | null> {
     return await LinkzlyReactNative.debugGetConfig();
+  }
+
+  /**
+   * Get the number of pending events in the queue
+   *
+   * @returns Number of pending events
+   */
+  async getPendingEventCount(): Promise<number> {
+    return await LinkzlyReactNative.getPendingEventCount();
+  }
+
+  /**
+   * Flush all pending events immediately
+   *
+   * @returns Promise resolving to true if successful
+   */
+  async flushEvents(): Promise<boolean> {
+    const result = await LinkzlyReactNative.flushEvents();
+    return result.success || false;
   }
 }
 

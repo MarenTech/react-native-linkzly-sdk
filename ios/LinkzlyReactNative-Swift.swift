@@ -220,6 +220,24 @@ public class LinkzlyReactNativeSwift: NSObject {
         resolver(["success": true])
     }
 
+    @objc(trackPurchaseWithParameters:resolver:rejecter:)
+    public static func trackPurchase(
+        parameters: [String: Any]?,
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        // LinkzlySDK.trackPurchase returns the SDK instance, or nil if not configured
+        // We just need to know it was called
+        LinkzlySDK.trackPurchase(parameters: parameters ?? [:]) { result in
+             switch result {
+             case .success(_):
+                 resolver(["success": true])
+             case .failure(let error):
+                 rejecter("TRACK_PURCHASE_ERROR", error.localizedDescription, error)
+             }
+         }
+    }
+
     @objc(trackEventBatchWithEvents:resolver:rejecter:)
     public static func trackEventBatch(
         events: [[String: Any]],
@@ -359,6 +377,24 @@ public class LinkzlyReactNativeSwift: NSObject {
     ) {
         let status = LinkzlySDK.getATTStatus()
         resolver(status ?? NSNull())
+    }
+
+    @objc(startSessionWithResolver:rejecter:)
+    public static func startSession(
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        LinkzlySDK.startSession()
+        resolver(["success": true])
+    }
+
+    @objc(endSessionWithResolver:rejecter:)
+    public static func endSession(
+        resolver: @escaping RCTPromiseResolveBlock,
+        rejecter: @escaping RCTPromiseRejectBlock
+    ) {
+        LinkzlySDK.endSession()
+        resolver(["success": true])
     }
 
     // MARK: - Flush Events and Pending Count
