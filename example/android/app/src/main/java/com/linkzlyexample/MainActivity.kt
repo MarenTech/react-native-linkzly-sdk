@@ -1,9 +1,11 @@
 package com.linkzlyexample
 
+import android.content.Intent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+import com.linkzly.reactnative.LinkzlyReactNativeModule
 
 class MainActivity : ReactActivity() {
 
@@ -19,6 +21,29 @@ class MainActivity : ReactActivity() {
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  /**
+   * Handle deep links when app is already running (warm start)
+   * This ensures the LinkzlySDK processes deep links even if
+   * React Native's Linking.addEventListener doesn't fire reliably
+   *
+   * CRITICAL: This override is required for Android warm start deep links to work
+   */
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+
+    // Critical: Update the activity's intent so getIntent() returns the latest one
+    setIntent(intent)
+
+    // Handle through Linkzly native module (bypasses unreliable RN Linking events)
+    val handled = LinkzlyReactNativeModule.getLatestInstance()?.handleIntent(intent) ?: false
+
+    if (handled) {
+      android.util.Log.d("MainActivity", "Deep link handled by LinkzlySDK: ${intent?.data}")
+    } else {
+      android.util.Log.w("MainActivity", "Deep link not handled by LinkzlySDK: ${intent?.data}")
+    }
+  }
 
   /**
    * Fix for React Native 0.82+ soft exception:

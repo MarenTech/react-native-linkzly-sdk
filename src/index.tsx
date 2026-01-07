@@ -364,15 +364,33 @@ class LinkzlySDK {
       this.deepLinkSubscription = eventEmitter.addListener(
         'LinkzlyDeepLinkReceived',
         (data: DeepLinkData) => {
+          // This event can now come from multiple sources:
+          // 1. Android: Direct native module emission from onNewIntent (NEW)
+          // 2. iOS: handleUniversalLink native response
+          // 3. Both: Backend attribution enrichment
+          // 4. Both: React Native Linking.addEventListener (existing, unreliable on Android)
+
           // Deduplication: Skip if this URL is currently being processed
-          // or was recently processed via processDeepLink
           if (data.url && this.pendingAttributionUrls.has(data.url)) {
             console.log('[LinkzlySDK] Skipping native event for URL being processed:', data.url);
             return;
           }
 
+          // Check if this URL was just processed via processDeepLink (from Linking.addEventListener)
+          // Use a shorter 2-second window for dual-emission scenarios
+          if (data.url) {
+            const lastProcessed = this.processedUrls.get(data.url);
+            const now = Date.now();
+            if (lastProcessed && (now - lastProcessed) < 2000) {
+              console.log('[LinkzlySDK] Skipping duplicate native event (already processed via Linking):', data.url);
+              return;
+            }
+            // Mark as processed to prevent Linking.addEventListener from duplicating
+            this.processedUrls.set(data.url, now);
+          }
+
           // Native events typically come from backend attribution (iOS/Android)
-          // These are enriched data, so we notify listeners
+          // or direct intent handling (Android warm start)
           console.log('[LinkzlySDK] Native deep link event received:', {
             url: data.url,
             path: data.path,

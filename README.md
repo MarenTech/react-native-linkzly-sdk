@@ -66,6 +66,35 @@ allprojects {
 }
 ```
 
+### Android Deep Link Configuration (Required for Warm Start)
+
+For proper deep link handling on Android when the app is already running (warm start), you must override `onNewIntent()` in your MainActivity:
+
+**File:** `android/app/src/main/java/com/yourapp/MainActivity.kt`
+
+```kotlin
+import android.content.Intent
+import com.linkzly.reactnative.LinkzlyReactNativeModule
+
+class MainActivity : ReactActivity() {
+  // ... existing code ...
+
+  override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    setIntent(intent)
+    LinkzlyReactNativeModule.getLatestInstance()?.handleIntent(intent)
+  }
+}
+```
+
+**Why is this needed?**
+React Native's `Linking.addEventListener` has a known issue on Android where it doesn't reliably fire when the app receives a deep link while already running. This override ensures deep links are processed directly through the LinkzlySDK native module.
+
+**After adding this:**
+- You can remove any `Platform.OS === 'android'` workarounds using React Native's Linking API
+- Deep links will work reliably on both cold and warm starts
+- The SDK handles everything automatically
+
 ## Quick Start
 
 ```typescript

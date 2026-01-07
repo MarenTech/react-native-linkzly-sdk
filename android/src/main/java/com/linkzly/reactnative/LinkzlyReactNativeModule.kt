@@ -13,6 +13,10 @@ class LinkzlyReactNativeModule(reactContext: ReactApplicationContext) :
 
     private val reactAppContext: ReactApplicationContext = reactContext
 
+    init {
+        latestInstance = this
+    }
+
     override fun getName(): String {
         return "LinkzlyReactNative"
     }
@@ -68,6 +72,44 @@ class LinkzlyReactNativeModule(reactContext: ReactApplicationContext) :
         } catch (e: Exception) {
             promise.reject("HANDLE_LINK_ERROR", e.message, e)
         }
+    }
+
+    /**
+     * Handle deep link intent directly from MainActivity.onNewIntent()
+     * This bypasses React Native's unreliable Linking.addEventListener on Android warm start
+     * @param intent The intent containing the deep link URL
+     * @return true if the intent was handled, false otherwise
+     */
+    fun handleIntent(intent: Intent?): Boolean {
+        if (intent?.data == null) {
+            return false
+        }
+
+        val urlString = intent.data.toString()
+        android.util.Log.d("LinkzlyReactNative", "handleIntent called with URL: $urlString")
+
+        try {
+            // Process through native Linkzly SDK
+            val deepLinkData = LinkzlySDK.handleAppLink(intent)
+
+            // Emit event to React Native
+            if (deepLinkData != null) {
+                val eventData = Arguments.createMap().apply {
+                    deepLinkData.url?.let { putString("url", it) }
+                    putString("path", deepLinkData.path)
+                    putMap("parameters", convertMapToWritableMap(deepLinkData.parameters))
+                    putString("smartLinkId", deepLinkData.smartLinkId)
+                    putString("clickId", deepLinkData.clickId)
+                }
+                sendEvent("LinkzlyDeepLinkReceived", eventData)
+                android.util.Log.d("LinkzlyReactNative", "Deep link event emitted successfully")
+                return true
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("LinkzlyReactNative", "Error handling intent: ${e.message}", e)
+        }
+
+        return false
     }
 
     @ReactMethod
@@ -485,5 +527,13 @@ class LinkzlyReactNativeModule(reactContext: ReactApplicationContext) :
         }
 
         return writableArray
+    }
+
+    companion object {
+        private var latestInstance: LinkzlyReactNativeModule? = null
+
+        fun getLatestInstance(): LinkzlyReactNativeModule? {
+            return latestInstance
+        }
     }
 }
